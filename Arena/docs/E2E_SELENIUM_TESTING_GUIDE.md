@@ -119,29 +119,4 @@ npm test
 2. **Interactive HTML Report**: Generated at `Arena/tests/e2e-selenium/mochawesome-report/e2e-report.html` containing charts, timings, and pass/fail indicators.
 3. **JUnit XML Output**: Generated at `Arena/tests/e2e-selenium/test-results/junit.xml` for integration with Daham's unified pipeline and SonarQube test execution metrics.
 
----
 
-## 7. Live Demo Walkthrough (Strict 2-Minute Timebox: 06:00 – 08:00)
-
-| Time | Target Action | Speaking Script |
-| :--- | :--- | :--- |
-| **06:00 – 06:20** | Introduction & Architecture Context | *"I am Hiruna, and I implemented the End-to-End and UI Testing framework using Selenium WebDriver with the Page Object Model. E2E tests validate complete user journeys across microservice boundaries."* |
-| **06:20 – 07:15** | Live Execution (`npm run test:e2e:headed` or `npm run test:e2e`) | *"Triggering the suite live. Notice Step 1: User registers in User Service on port 5168. Step 2: Role is upgraded to Organizer. Step 3: Navigates to Tournament Service on port 8082 to create a tournament. The state instantly renders in the React UI."* |
-| **07:15 – 07:45** | Negative RBAC & Teardown Verification | *"Next, TC-E2E-02 verifies our RBAC route guard: when a Viewer attempts to access an organizer route, they are blocked and redirected to 403 Forbidden. Immediately after, our automated teardown purges the test user via REST API, preventing database pollution."* |
-| **07:45 – 08:00** | HTML Report & Handover | *"All tests executed with 100% pass rate. Here is our Mochawesome HTML report. Handing over to Daham for Code Quality."* |
-
----
-
-## 8. VIVA Preparation & Defense
-
-### Q1: Why did you choose the Page Object Model (POM) pattern?
-> **Answer**: *"POM decouples UI locators and DOM actions from test specifications. If a button ID or CSS class changes, we update a single locator in `TournamentsPage` rather than modifying dozens of test files, ensuring high maintainability and adhering to the Single Responsibility Principle."*
-
-### Q2: How did you prevent test flakiness in Selenium?
-> **Answer**: *"We strictly avoided hardcoded pauses (`sleep`). Instead, we implemented explicit waits using `WebDriverWait` with conditions such as `until.elementLocated`, `until.elementIsVisible`, and `until.urlContains`. This synchronizes execution directly with the frontend's asynchronous React state updates and network responses."*
-
-### Q3: How do you handle test data isolation across microservice databases?
-> **Answer**: *"We dynamically generate unique timestamps for usernames (`e2e_user_<timestamp>`) and entities so parallel or successive test runs never collide. Additionally, our test lifecycle features an automated `after` teardown hook that invokes the backend deletion endpoint (`DELETE /api/Users/me`) using the acquired JWT token, ensuring clean database state."*
-
-### Q4: Why are E2E tests at the top of the Test Pyramid while Unit tests are at the bottom?
-> **Answer**: *"Unit tests at the base isolate individual methods in memory and execute in milliseconds without external dependencies. E2E tests sit at the apex because they require the entire microservices topology, databases, and browser engine running, making them the most expensive and slowest to run. However, they provide the highest real-world fidelity by verifying that all distributed services correctly collaborate from the end user's perspective."*
