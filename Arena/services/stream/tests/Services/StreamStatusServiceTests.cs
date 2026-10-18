@@ -136,4 +136,69 @@ public class StreamStatusServiceTests
         Assert.Null(result);
         _matchRepoMock.Verify(m => m.UpdateMatchStatusAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
     }
+
+    [Theory]
+    [InlineData("stream.unknown")]
+    [InlineData("channel.update")]
+    [InlineData("stream.live")]
+    [InlineData("")]
+    [InlineData("STREAM.ONLINE")]
+    public async Task ProcessStreamStatusUpdateAsync_UnsupportedSubscriptionTypes_ThrowsArgumentException(string unsupportedType)
+    {
+        // Act & Assert
+        var ex = await Assert.ThrowsAsync<ArgumentException>(() =>
+            _service.ProcessStreamStatusUpdateAsync(unsupportedType, "esl_csgo"));
+
+        Assert.Contains("Unsupported subscription type", ex.Message);
+        _streamRepoMock.Verify(s => s.GetStreamByChannelNameAsync(It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ProcessStreamStatusUpdateAsync_StreamWithoutMatchId_TransitionsStreamWithoutMatchUpdate()
+    {
+        // Arrange: Stream exists without an assigned MatchId
+        const string channelName = "solo_streamer";
+        const int streamId = 200;
+
+        var streamResponse = new StreamResponse(streamId, 10, 1, null, channelName, "Twitch", "Solo Run", "arena.gg", StreamStatus.Scheduled, 0, null, null, DateTime.UtcNow);
+
+        _streamRepoMock.Setup(s => s.GetStreamByChannelNameAsync(channelName))
+            .ReturnsAsync(streamResponse);
+        _streamRepoMock.Setup(s => s.UpdateStreamStatusAsync(streamId, StreamStatus.Live, StreamStatus.Scheduled))
+            .ReturnsAsync(true);
+
+        // Act
+        var result = await _service.ProcessStreamStatusUpdateAsync("stream.online", channelName);
+
+        // Assert
+        Assert.Equal(streamId, result);
+        _streamRepoMock.Verify(s => s.UpdateStreamStatusAsync(streamId, StreamStatus.Live, StreamStatus.Scheduled), Times.Once);
+        _matchRepoMock.Verify(m => m.UpdateMatchStatusAsync(It.IsAny<int>(), It.IsAny<string>(), It.IsAny<string>()), Times.Never);
+    }
+
+    [Fact]
+    public async Task ProcessStreamStatusUpdateAsync_MatchUpdateFails_StillReturnsStreamId()
+    {
+        // Arrange: Stream update succeeds but cascading match update fails (e.g. concurrent race)
+        const string channelName = "match_streamer";
+        const int streamId = 300;
+        const int matchId = 42;
+
+        var streamResponse = new StreamResponse(streamId, 10, 1, matchId, channelName, "Twitch", "Finals", "arena.gg", StreamStatus.Scheduled, 0, null, null, DateTime.UtcNow);
+
+        _streamRepoMock.Setup(s => s.GetStreamByChannelNameAsync(channelName))
+            .ReturnsAsync(streamResponse);
+        _streamRepoMock.Setup(s => s.UpdateStreamStatusAsync(streamId, StreamStatus.Live, StreamStatus.Scheduled))
+            .ReturnsAsync(true);
+        _matchRepoMock.Setup(m => m.UpdateMatchStatusAsync(matchId, StreamStatus.Live, StreamStatus.Scheduled))
+            .ReturnsAsync(false);
+
+        // Act
+        var result = await _service.ProcessStreamStatusUpdateAsync("stream.online", channelName);
+
+        // Assert
+        Assert.Equal(streamId, result);
+        _streamRepoMock.Verify(s => s.UpdateStreamStatusAsync(streamId, StreamStatus.Live, StreamStatus.Scheduled), Times.Once);
+        _matchRepoMock.Verify(m => m.UpdateMatchStatusAsync(matchId, StreamStatus.Live, StreamStatus.Scheduled), Times.Once);
+    }
 }
