@@ -3,6 +3,16 @@
   "version": "1.0.0",
   "description": "SE3112 Microservice Testing Pipeline Root Runner",
   "scripts": {
+    "test": "npm run test:pipeline",
+    "test:pipeline": "bash scripts/run-pipeline.sh all",
+    "test:all": "bash scripts/run-pipeline.sh all",
+    "test:unit": "dotnet test Arena/Arena.slnx",
+    "test:unit:coverage": "dotnet test Arena/Arena.slnx --collect:\"XPlat Code Coverage\"",
+    "test:quality": "bash scripts/run-pipeline.sh quality",
+    "test:load": "npm --prefix Arena/tests/load run test:load",
+    "test:load:auth": "npm --prefix Arena/tests/load run test:load:auth",
+    "test:load:tournaments": "npm --prefix Arena/tests/load run test:load:tournaments",
+    "test:load:stress": "npm --prefix Arena/tests/load run test:load:stress",
     "test:e2e": "npm --prefix Arena/tests/e2e-selenium run test:e2e",
     "test:e2e:headed": "npm --prefix Arena/tests/e2e-selenium run test:e2e:headed",
     "test:e2e:report": "npm --prefix Arena/tests/e2e-selenium run test:e2e:report"
