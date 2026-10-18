@@ -1,0 +1,22 @@
+{
+  "name": "arena-load-tests",
+  "version": "1.0.0",
+  "description": "k6 Load and Performance Testing Suite for Arena Microservices",
+  "private": true,
+  "scripts": {
+    "test:load": "k6 run load-test.js",
+    "test:load:auth": "k6 run auth-load-test.js",
+    "test:load:tournaments": "k6 run tournaments-load-test.js",
+    "test:load:stress": "k6 run stress-test.js",
+    "test:load:report": "k6 run --summary-export=report.json load-test.js"
+  },
+  "keywords": [
+    "k6",
+    "load-testing",
+    "performance",
+    "microservices",
+    "stress-test"
+  ],
+  "author": "",
+  "license": "ISC"
+}
