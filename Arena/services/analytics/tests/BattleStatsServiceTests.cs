@@ -280,4 +280,117 @@ public class BattleStatsServiceTests
 
         Assert.Same(expectedException, actualException);
     }
+
+    #region Parameterized Mapping and Aggregation Tests ([Theory])
+
+    [Theory]
+    [InlineData(10, 1, "Team Crimson", 50, 1500L, 5000L, 2, 0)]
+    [InlineData(20, 2, "Team Cobalt", 75, 2250L, 7500L, 1, 2)]
+    [InlineData(99, 5, "Team Omega", 0, 0L, 0L, 0, 0)]
+    public async Task GetBattleSummariesByStreamIdAsync_ParameterizedEntities_MapsAllPropertiesAccurately(
+        int streamId,
+        int teamId,
+        string teamName,
+        int attacks,
+        long damage,
+        long coins,
+        int won,
+        int lost)
+    {
+        // Arrange
+        var summaries = new List<StreamTeamBattleSummary>
+        {
+            new()
+            {
+                StreamId = streamId,
+                TeamId = teamId,
+                TeamName = teamName,
+                TotalAttacks = attacks,
+                TotalDamageDealt = damage,
+                TotalCoinsSpent = coins,
+                RoundsWon = won,
+                RoundsLost = lost,
+                LastAttackAt = DateTime.UtcNow
+            }
+        };
+
+        _repositoryMock
+            .Setup(r => r.GetBattleSummariesByStreamIdAsync(streamId))
+            .ReturnsAsync(summaries);
+
+        // Act
+        var result = await _service.GetBattleSummariesByStreamIdAsync(streamId);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result);
+        var item = result[0];
+        Assert.Equal(streamId, item.StreamId);
+        Assert.Equal(teamId, item.TeamId);
+        Assert.Equal(teamName, item.TeamName);
+        Assert.Equal(attacks, item.TotalAttacks);
+        Assert.Equal(damage, item.TotalDamageDealt);
+        Assert.Equal(coins, item.TotalCoinsSpent);
+        Assert.Equal(won, item.RoundsWon);
+        Assert.Equal(lost, item.RoundsLost);
+
+        _repositoryMock.Verify(r => r.GetBattleSummariesByStreamIdAsync(streamId), Times.Once);
+    }
+
+    [Theory]
+    [InlineData(101, 1, 1, "Team Crimson", 20, 15, 600, 450)]
+    [InlineData(202, 2, 2, "Team Azure", 40, 38, 1200, 1150)]
+    public async Task GetRoundOutcomesByStreamIdAsync_ParameterizedOutcomes_MapsCorrectly(
+        int streamId,
+        int roundNumber,
+        int winningTeamId,
+        string winningTeamName,
+        int teamAAttacks,
+        int teamBAttacks,
+        int teamADamage,
+        int teamBDamage)
+    {
+        // Arrange
+        var outcomes = new List<StreamRoundOutcome>
+        {
+            new()
+            {
+                StreamId = streamId,
+                RoundNumber = roundNumber,
+                WinningTeamId = winningTeamId,
+                WinningTeamName = winningTeamName,
+                TeamAId = 1,
+                TeamBId = 2,
+                TeamAAttacks = teamAAttacks,
+                TeamBAttacks = teamBAttacks,
+                TeamADamage = teamADamage,
+                TeamBDamage = teamBDamage,
+                CompletedAt = DateTime.UtcNow
+            }
+        };
+
+        _repositoryMock
+            .Setup(r => r.GetRoundOutcomesByStreamIdAsync(streamId))
+            .ReturnsAsync(outcomes);
+
+        // Act
+        var result = await _service.GetRoundOutcomesByStreamIdAsync(streamId);
+
+        // Assert
+        Assert.NotNull(result);
+        Assert.Single(result);
+        var outcome = result[0];
+        Assert.Equal(streamId, outcome.StreamId);
+        Assert.Equal(roundNumber, outcome.RoundNumber);
+        Assert.Equal(winningTeamId, outcome.WinningTeamId);
+        Assert.Equal(winningTeamName, outcome.WinningTeamName);
+        Assert.Equal(teamAAttacks, outcome.TeamAAttacks);
+        Assert.Equal(teamBAttacks, outcome.TeamBAttacks);
+        Assert.Equal(teamADamage, outcome.TeamADamage);
+        Assert.Equal(teamBDamage, outcome.TeamBDamage);
+
+        _repositoryMock.Verify(r => r.GetRoundOutcomesByStreamIdAsync(streamId), Times.Once);
+    }
+
+    #endregion
 }
