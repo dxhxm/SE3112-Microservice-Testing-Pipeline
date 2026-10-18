@@ -4,21 +4,11 @@
 ### SE3112: Advanced Software Engineering
 **BSc. (Hons) in Computer Science — Year 3, Semester 1**
 
-[![Automated Testing Pipeline](https://github.com/ARENA-esports/arena-streaming-platform/actions/workflows/testing-pipeline.yml/badge.svg)](https://github.com/ARENA-esports/arena-streaming-platform/actions/workflows/testing-pipeline.yml)
-[![CI Pipeline](https://github.com/ARENA-esports/arena-streaming-platform/actions/workflows/ci.yml/badge.svg)](https://github.com/ARENA-esports/arena-streaming-platform/actions/workflows/ci.yml)
-[![CI Frontend](https://github.com/ARENA-esports/arena-streaming-platform/actions/workflows/ci-frontend.yml/badge.svg)](https://github.com/ARENA-esports/arena-streaming-platform/actions/workflows/ci-frontend.yml)
-[![SonarCloud Quality Gate](https://sonarcloud.io/api/project_badges/measure?project=arena-esports_arena-backend&metric=alert_status)](https://sonarcloud.io/dashboard?id=arena-esports_arena-backend)
-[![.NET 10](https://img.shields.io/badge/.NET-10.0-512BD4?logo=dotnet&logoColor=white)](https://dotnet.microsoft.com/)
-[![React 18](https://img.shields.io/badge/React-18.x-61DAFB?logo=react&logoColor=black)](https://react.dev/)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-3178C6?logo=typescript&logoColor=white)](https://www.typescriptlang.org/)
-[![k6](https://img.shields.io/badge/k6-Load_Testing-7D64FF?logo=k6&logoColor=white)](https://k6.io/)
-[![Selenium](https://img.shields.io/badge/Selenium-WebDriver-43B02A?logo=selenium&logoColor=white)](https://www.selenium.dev/)
-
 <p align="center">
   A comprehensive, multi-layered automated testing pipeline implemented across the <b>ARENA Esports Streaming & Gamified Tournament Microservices Platform</b>. Built to demonstrate industry-standard testing paradigms, unified CI/CD automation, and software quality indicators.
 </p>
 
-[Team Allocation](#-team-member-allocation--role-division) • [Architecture](#-microservices--testing-architecture) • [Tool Setup](#-tool-setup--prerequisites) • [Pipeline Commands](#-pipeline-execution-commands) • [Testing Paradigms](#-deep-dive-testing-paradigms) • [Live Demo](#-12-minute-live-presentation-structure)
+[Team Allocation](#-team-member-allocation--role-division) • [Architecture](#-microservices--testing-architecture) • [Tool Setup](#-tool-setup--prerequisites) • [Pipeline Commands](#-pipeline-execution-commands) • [Testing Paradigms](#-deep-dive-testing-paradigms) • [CI/CD](#-cicd-automation--github-actions-integration)
 
 ---
 
@@ -43,35 +33,35 @@ The base system consists of 6 backend microservices and 1 frontend client, fully
 
 ```mermaid
 graph TD
-    subgraph Client [Frontend Layer]
-        WEB[ARENA Web Client<br/>React 18 / TypeScript / Vite<br/>Port: 5173]
+    subgraph Client ["Frontend Layer"]
+        WEB["ARENA Web Client<br/>React 18 / TypeScript / Vite<br/>Port: 5173"]
     end
 
-    subgraph Tests [Testing Pipeline Layers]
-        E2E[4. UI / E2E Testing<br/>Selenium WebDriver + POM]
-        LOAD[3. Load & Performance Testing<br/>k6 Scenario Profiling]
-        SONAR[2. Code Quality & Metrics<br/>SonarCloud Static Analysis]
-        UNIT[1. Unit Testing & Mocking<br/>xUnit + Moq + Coverlet]
+    subgraph Tests ["Testing Pipeline Layers"]
+        E2E["4. UI / E2E Testing<br/>Selenium WebDriver + POM"]
+        LOAD["3. Load & Performance Testing<br/>k6 Scenario Profiling"]
+        SONAR["2. Code Quality & Metrics<br/>SonarCloud Static Analysis"]
+        UNIT["1. Unit Testing & Mocking<br/>xUnit + Moq + Coverlet"]
     end
 
-    subgraph Services [Backend Microservices (.NET 10)]
-        USER[User Service<br/>Port: 5168 / MySQL]
-        STREAM[Stream Service<br/>Port: 5167 / MySQL]
-        TOUR[Tournament Service<br/>Port: 8082 / MySQL]
-        CHAT[Chat Service<br/>WebSocket / In-Memory]
-        BATTLE[Battle Economy Service<br/>Port: 8083 / MySQL]
-        ANALYTICS[Analytics Service<br/>Kafka Event Consumer]
+    subgraph Services ["Backend Microservices (.NET 10)"]
+        USER["User Service<br/>Port: 5168 / MySQL"]
+        STREAM["Stream Service<br/>Port: 5167 / MySQL"]
+        TOUR["Tournament Service<br/>Port: 8082 / MySQL"]
+        CHAT["Chat Service<br/>WebSocket / In-Memory"]
+        BATTLE["Battle Economy Service<br/>Port: 8083 / MySQL"]
+        ANALYTICS["Analytics Service<br/>Kafka Event Consumer"]
     end
 
-    E2E -->|Automates User Journey| WEB
+    E2E -->|"Automates User Journey"| WEB
     WEB --> USER
     WEB --> TOUR
     WEB --> STREAM
-    LOAD -->|Stress & Performance| USER
-    LOAD -->|Read Catalog Concurrency| TOUR
-    SONAR -->|Monorepo Static Analysis| Services
-    SONAR -->|Client Static Analysis| WEB
-    UNIT -->|Isolates Business Logic| Services
+    LOAD -->|"Stress & Performance"| USER
+    LOAD -->|"Read Catalog Concurrency"| TOUR
+    SONAR -->|"Monorepo Static Analysis"| Services
+    SONAR -->|"Client Static Analysis"| WEB
+    UNIT -->|"Isolates Business Logic"| Services
 ```
 
 ---
@@ -140,18 +130,18 @@ bash scripts/run-pipeline.sh all
 The unified runner executes each stage sequentially, records execution durations, and outputs a formatted summary table:
 
 ```text
-╔═════════════════════════════════════════════════════════════════════════════╗
-║              SE3112 AUTOMATED TESTING PIPELINE SUMMARY TABLE                ║
-╠═════════════════════════════════════════════════════════════════════════════╣
-║ Testing Paradigm & Assigned Role                 │ Status       │ Duration ║
-╟──────────────────────────────────────────────────┼──────────────┼──────────╢
-║ [1/4] Unit Testing & Mocking (xUnit / Moq)         │ PASSED       │     12s   ║
-║ [2/4] Code Quality & Metrics (SonarCloud / Roslyn) │ PASSED       │     18s   ║
-║ [3/4] Load & Performance Testing (k6)              │ PASSED       │     60s   ║
-║ [4/4] UI & End-to-End Testing (Selenium WebDriver) │ PASSED       │     15s   ║
-╠═════════════════════════════════════════════════════════════════════════════╣
-║ Total Pipeline Execution Time: 105s                                         ║
-╚═════════════════════════════════════════════════════════════════════════════╝
+╔══════════════════════════════════════════════════════════════════════════════╗
+║               SE3112 AUTOMATED TESTING PIPELINE SUMMARY TABLE                ║
+╠════════════════════════════════════════════════════╤══════════════╤══════════╣
+║ Testing Paradigm & Assigned Role                   │ Status       │ Duration ║
+╟────────────────────────────────────────────────────┼──────────────┼──────────╢
+║ [1/4] Unit Testing & Mocking (xUnit / Moq)         │ PASSED       │ 12s      ║
+║ [2/4] Code Quality & Metrics (SonarCloud / Roslyn) │ PASSED       │ 18s      ║
+║ [3/4] Load & Performance Testing (k6)              │ PASSED       │ 60s      ║
+║ [4/4] UI & End-to-End Testing (Selenium WebDriver) │ PASSED       │ 15s      ║
+╠════════════════════════════════════════════════════╧══════════════╧══════════╣
+║ Total Pipeline Execution Time: 105s                                          ║
+╚══════════════════════════════════════════════════════════════════════════════╝
 ```
 
 ---
