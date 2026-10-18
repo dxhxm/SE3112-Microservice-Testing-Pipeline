@@ -1,0 +1,9 @@
+{
+  "extension": ["ts"],
+  "spec": "specs/**/*.spec.ts",
+  "require": "ts-node/register",
+  "timeout": 60000,
+  "reporter": "mocha-multi-reporters",
+  "reporter-options": "configFile=reporters.json",
+  "exit": true
+}

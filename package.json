@@ -1,0 +1,10 @@
+{
+  "name": "se3112-microservice-testing-pipeline",
+  "version": "1.0.0",
+  "description": "SE3112 Microservice Testing Pipeline Root Runner",
+  "scripts": {
+    "test:e2e": "npm --prefix Arena/tests/e2e-selenium run test:e2e",
+    "test:e2e:headed": "npm --prefix Arena/tests/e2e-selenium run test:e2e:headed",
+    "test:e2e:report": "npm --prefix Arena/tests/e2e-selenium run test:e2e:report"
+  }
+}
