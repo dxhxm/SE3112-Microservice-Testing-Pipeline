@@ -1,0 +1,14 @@
+{
+  "reporterEnabled": "spec, mochawesome, mocha-junit-reporter",
+  "mochawesomeReporterOptions": {
+    "reportDir": "mochawesome-report",
+    "reportFilename": "e2e-report",
+    "html": true,
+    "json": true,
+    "charts": true,
+    "overwrite": true
+  },
+  "mochaJunitReporterReporterOptions": {
+    "mochaFile": "test-results/junit.xml"
+  }
+}

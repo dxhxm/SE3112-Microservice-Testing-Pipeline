@@ -1,3 +1,10 @@
 .DS_Store
 .scannerwork/
 .sonar/
+node_modules/
+**/node_modules/
+mochawesome-report/
+**/mochawesome-report/
+test-results/
+**/test-results/
+dist/
