@@ -83,8 +83,8 @@ Ensure the following runtimes and tools are installed on your environment:
 Clone the repository and initialize project dependencies:
 ```bash
 # Clone the repository
-git clone https://github.com/ARENA-esports/arena-streaming-platform.git
-cd arena-streaming-platform
+git clone https://github.com/dxhxm/SE3112-Microservice-Testing-Pipeline.git
+cd SE3112-Microservice-Testing-Pipeline
 
 # Restore .NET solution dependencies (all 6 microservices + test suites)
 dotnet restore Arena/Arena.slnx
